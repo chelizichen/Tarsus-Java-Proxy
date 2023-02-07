@@ -1,13 +1,17 @@
 package com.example.demo.decorator;
 
-import org.apache.tomcat.jni.Error;
+import com.example.demo.register.Hello;
+import com.example.demo.utils.ret;
 
 import java.io.*;
-import java.lang.annotation.AnnotationTypeMismatchException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ArcBaseServer {
 
@@ -17,59 +21,92 @@ public class ArcBaseServer {
             "[##]"
     };
 
-    public void boost(Class SonClass){
-        boolean hasAnnotation = SonClass.isAnnotationPresent(TestClassDecorator.class);
-        if ( hasAnnotation ) {
-            TestClassDecorator testAnnotation = (TestClassDecorator) SonClass.getAnnotation(TestClassDecorator.class);
+    static String[] size = new String[]{
+            "#a#",
+            "#b#", "#c#", "#d#",
+            "#e#", "#f#", "#g#", "#h#", "#i#",
+            "#j#", "#k#", "#l#", "#m#",
+            "#n#", "#o#", "#p#", "#q#", "#r#", "#s#",
+            "#t#", "#u#", "#v#", "#w#", "#x#", "#y#",
+            "#z#", "#-#", "#=#", "#/#", "#.#", "#,#"};
 
-            // 拿到 Port 和 Host
+    private Map<String, ArcInterFace> ClazzMap = new HashMap();
+
+    public void boost(Class SonClass) {
+        boolean hasAnnotation = SonClass.isAnnotationPresent(TestClassDecorator.class);
+        if (hasAnnotation) {
+            TestClassDecorator testAnnotation = (TestClassDecorator) SonClass.getAnnotation(TestClassDecorator.class);
+            // 拿到 Port
             Integer PORT = testAnnotation.port();
+
+            Hello hello = new Hello();
+            String name = Hello.class.getSimpleName();
+            System.out.println("name:" + name);
+            this.ClazzMap.put(name, hello);
+
             this.createServer(PORT);
-        }else {
+        } else {
             return;
         }
     }
 
-    private void createServer(Integer port){
+    private void createServer(Integer port) {
         try {
-            ServerSocket serverSocket = new ServerSocket(port,20);
+            ServerSocket serverSocket = new ServerSocket(port, 20);
 
             InputStreamReader inSR = null;
             OutputStreamWriter outSW = null;
 
-            while (true){
+            while (true) {
                 // 使用ServerSocket对象中的方法accept，获取到请求的客户端对象Socket。
                 Socket socket = serverSocket.accept();
 
                 inSR = new InputStreamReader(socket.getInputStream(), "UTF-8");
                 BufferedReader br = new BufferedReader(inSR);
-
+                outSW = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+                BufferedWriter bw = new BufferedWriter(outSW);
                 StringBuffer stf = new StringBuffer();
 
                 String str = "";
-                while ((str = br.readLine()) != null){
-                    System.out.println("收到客户端消息2:" + str);
+                while ((str = br.readLine()) != null) {
                     str = str.trim();
                     stf.append(str);
 
                     // 执行 结束 语句 并且 拆分相关字节流
-                    if(str.endsWith("[#ENDL#]")){
+                    if (str.endsWith("[#ENDL#]")) {
 
-                        String s0 = this.unpkgHead(0, stf);
-                        String s1 = this.unpkgHead(1, stf);
-                        String s2 = this.unpkgHead(2, stf);
-                        System.out.println("消息全部发送完毕"+stf);
-                        System.out.println("截取参数");
-                        System.out.println(s0);
-                        System.out.println(s1);
-                        System.out.println(s2);
+                        String clazz = this.unpkgHead(0, stf);
+                        String method = this.unpkgHead(1, stf);
+                        String timeout = this.unpkgHead(2, stf);
+                        ArcInterFace arcInterFace = this.ClazzMap.get(clazz);
+
+                        try {
+                            Class<? extends ArcInterFace> aClass = arcInterFace.getClass();
+                            Method getMethod = aClass.getMethod(method, String[].class);
+                            int index = stf.indexOf("[##]");
+                            String buf = stf.substring(index + 4, stf.length() - 8);
+                            List list = this.unpkgBody(buf);
+                            String[] args = new String[list.size()];
+                            Object[] array = list.toArray(args);
+                            try {
+                                ret data =  (ret) getMethod.invoke(arcInterFace, (Object) array);
+
+                                bw.write(data.toString());
+                                bw.flush();
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
+
+//                        System.out.println("消息全部发送完毕"+stf);
+//                        System.out.println("截取参数");
 
                         break;
                     }
                 }
 
-                outSW = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-                BufferedWriter bw = new BufferedWriter(outSW);
 
             }
 
@@ -79,7 +116,7 @@ public class ArcBaseServer {
     }
 
 
-    private String unpkgHead(int start,StringBuffer data){
+    private String unpkgHead(int start, StringBuffer data) {
         int start_index = data.indexOf(ArcBaseServer.proto[start]);
         int start_next = data.indexOf(ArcBaseServer.proto[start + 1]);
         String head = data.substring(start_index + proto[start].length(), start_next);
@@ -87,19 +124,71 @@ public class ArcBaseServer {
     }
 
 
-    private String unpkgHead(int start,StringBuffer data,boolean isEnd){
+    private String unpkgHead(int start, StringBuffer data, boolean isEnd) {
         int start_index = data.indexOf(ArcBaseServer.proto[start]);
         int start_next;
-        if(isEnd){
+        if (isEnd) {
             start_next = data.indexOf(ArcBaseServer.proto[proto.length - 1]);
-        }else{
+        } else {
             start_next = data.indexOf(ArcBaseServer.proto[start + 1]);
         }
         String head = data.substring(start_index + proto[start].length(), start_next);
         return head;
     }
 
-    private void __read_rpc__(){
+    private List unpkgBody(String buf) {
+        System.out.println("buf- >" + buf);
+        List args = new ArrayList();
+        int init = 0;
+        int start = buf.indexOf(size[init]);
+        while (true) {
+            String end_str = buf.substring(start, start + 3);
+            boolean isEnd = end_str == size[size.length - 1];
+            if (isEnd) {
+                break;
+            }
+            int next = buf.indexOf(size[init + 1], start);
+            System.out.println("next- >" + next);
+
+            if (next == -1) {
+                if (start + size[init].length() == buf.length()) {
+                    break;
+                }
+                String sub_pkg = buf.substring(start, start + 6);
+                System.out.println("SUB_PKG->  " + sub_pkg);
+                boolean is_un_pkg = sub_pkg == size[init] + size[0];
+                // 判断是否为未分割的参数
+                if (is_un_pkg) {
+                    String un_pkg = buf.substring(start + 3, buf.length() - 3);
+                    List list = this.unpkgBody(un_pkg);
+                    args.add(init, list);
+                } else {
+                    String substring = buf.substring(start + 3, buf.length() - 3);
+                    args.add(init, substring);
+                }
+                break;
+            } else {
+                boolean isObject = buf.substring(start, start + 6) == size[init] + size[0];
+                if (isObject) {
+                    int end = buf.indexOf(size[size.length - 1] + size[init + 1]);
+                    String un_pkg = buf.substring(start + 3, end + 3);
+                    List getargs = this.unpkgBody(un_pkg);
+                    args.add(init, getargs);
+                    start = end + 3;
+                } else {
+                    String getargs = buf.substring(start + 3, next);
+                    args.add(init, getargs);
+                    start = next;
+                }
+            }
+            init++;
+        }
+        return args;
+
+
+    }
+
+    private void __read_rpc__() {
 
     }
 

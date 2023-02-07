@@ -1,5 +1,4 @@
 package com.example.demo.controller;
-import com.alibaba.fastjson.JSON;
 import com.example.demo.config.ProxyRequest;
 import com.example.demo.utils.ret;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ public class ProxyController {
     @PostMapping("test")
     @ResponseBody
     public ret test() {
-
         ProxyRequest proxyRequest = new ProxyRequest(restTemplate);
         proxyRequest.setUrl("http://localhost:5005/api/proxy/interceptor");
         proxyRequest.put("name","tom");
