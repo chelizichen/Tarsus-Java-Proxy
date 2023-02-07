@@ -30,24 +30,24 @@ public class ArcBaseServer {
             "#t#", "#u#", "#v#", "#w#", "#x#", "#y#",
             "#z#", "#-#", "#=#", "#/#", "#.#", "#,#"};
 
-    private Map<String, ArcInterFace> ClazzMap = new HashMap();
+    private final Map<String, ArcInterFace> ClazzMap = new HashMap<String, ArcInterFace>();
 
-    public void boost(Class SonClass) {
-        boolean hasAnnotation = SonClass.isAnnotationPresent(TestClassDecorator.class);
+    public <T extends ArcBaseServer> void boost(Class<T> SonClass) {
+        boolean hasAnnotation = SonClass.isAnnotationPresent(ArcServerApplication.class);
         if (hasAnnotation) {
-            TestClassDecorator testAnnotation = (TestClassDecorator) SonClass.getAnnotation(TestClassDecorator.class);
+            ArcServerApplication testAnnotation = (ArcServerApplication) SonClass.getAnnotation(ArcServerApplication.class);
             // 拿到 Port
             Integer PORT = testAnnotation.port();
-
-            Hello hello = new Hello();
-            String name = Hello.class.getSimpleName();
-            System.out.println("name:" + name);
-            this.ClazzMap.put(name, hello);
-
+            this.setContainers();
             this.createServer(PORT);
-        } else {
-            return;
         }
+    }
+
+    private void setContainers(){
+        Hello hello = new Hello();
+        String name = Hello.class.getSimpleName();
+        this.ClazzMap.put(name, hello);
+
     }
 
     private void createServer(Integer port) {
@@ -99,10 +99,6 @@ public class ArcBaseServer {
                         } catch (NoSuchMethodException e) {
                             e.printStackTrace();
                         }
-
-//                        System.out.println("消息全部发送完毕"+stf);
-//                        System.out.println("截取参数");
-
                         break;
                     }
                 }
