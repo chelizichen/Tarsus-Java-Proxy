@@ -30,7 +30,6 @@ public class ArcBaseServer {
             "#t#", "#u#", "#v#", "#w#", "#x#", "#y#",
             "#z#", "#-#", "#=#", "#/#", "#.#", "#,#"};
 
-    private final Map<String, ArcInterFace> ClazzMap = new HashMap<String, ArcInterFace>();
 
     public <T extends ArcBaseServer> void boost(Class<T> SonClass) {
         boolean hasAnnotation = SonClass.isAnnotationPresent(ArcServerApplication.class);
@@ -44,10 +43,8 @@ public class ArcBaseServer {
     }
 
     private void setContainers(){
-        Hello hello = new Hello();
-        String name = Hello.class.getSimpleName();
-        this.ClazzMap.put(name, hello);
-
+        final int size = ArcInterFace.ClazzMap.size();
+        System.out.println("总共有"+size+"个代理类");
     }
 
     private void createServer(Integer port) {
@@ -68,6 +65,8 @@ public class ArcBaseServer {
                 StringBuffer stf = new StringBuffer();
 
                 String str = "";
+                System.out.println("接收到消息"+br);
+
                 while ((str = br.readLine()) != null) {
                     str = str.trim();
                     stf.append(str);
@@ -78,7 +77,7 @@ public class ArcBaseServer {
                         String clazz = this.unpkgHead(0, stf);
                         String method = this.unpkgHead(1, stf);
                         String timeout = this.unpkgHead(2, stf);
-                        ArcInterFace arcInterFace = this.ClazzMap.get(clazz);
+                        ArcInterFace arcInterFace = ArcInterFace.ClazzMap.get(clazz);
 
                         try {
                             Class<? extends ArcInterFace> aClass = arcInterFace.getClass();
@@ -90,7 +89,6 @@ public class ArcBaseServer {
                             Object[] array = list.toArray(args);
                             try {
                                 ret data =  (ret) getMethod.invoke(arcInterFace, (Object) array);
-
                                 bw.write(data.toString());
                                 bw.flush();
                             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -99,7 +97,6 @@ public class ArcBaseServer {
                         } catch (NoSuchMethodException e) {
                             e.printStackTrace();
                         }
-                        break;
                     }
                 }
 

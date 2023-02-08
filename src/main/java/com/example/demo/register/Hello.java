@@ -1,6 +1,5 @@
 package com.example.demo.register;
-
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.example.demo.decorator.ArcInterFace;
 import com.example.demo.decorator.ProxyInterFace;
 import com.example.demo.utils.ret;
@@ -15,8 +14,8 @@ public class Hello extends ArcInterFace {
         for (String s:args){
             System.out.println(s);
         }
-        ret success = ret.success("123123123");
-        System.out.println(success.toString());
+        final Object o = JSONObject.toJSONString(args);
+        ret success = ret.success(o);
         return success;
     }
 
