@@ -91,6 +91,7 @@ public class ArcBaseServer {
                                 ret data =  (ret) getMethod.invoke(arcInterFace, (Object) array);
                                 bw.write(data.toString());
                                 bw.flush();
+                                stf.delete(0,stf.length());
                             } catch (IllegalAccessException | InvocationTargetException e) {
                                 e.printStackTrace();
                             }
