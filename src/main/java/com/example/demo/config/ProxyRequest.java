@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProxyRequest {
-
-
-
     public String interFace;
     public String method;
     public String key;
