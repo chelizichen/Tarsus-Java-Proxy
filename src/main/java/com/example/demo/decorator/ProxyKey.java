@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface Key {
-    String value() default "";
-
+public @interface ProxyKey {
+   String host();
+   int port();
 }
