@@ -1,13 +1,8 @@
 package com.example.demo.controller;
-import com.example.demo.config.HttpClient;
-import com.example.demo.config.ProxyRequest;
 import com.example.demo.service.ProxyService;
 import com.example.demo.utils.ret;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.LinkedHashMap;
 
 @RequestMapping("proxy")
 @RestController

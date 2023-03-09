@@ -11,3 +11,15 @@ class DemoApplicationTests {
     }
 
 }
+
+
+//class TestAAA{
+//    public void sayHello(){
+//        final String methodName =  Thread.currentThread().getStackTrace()[1].getMethodName();
+//        System.out.println(methodName);
+//    }
+//    public static void main(String[] args) {
+//        final TestAAA testAAA = new TestAAA();
+//        testAAA.sayHello();
+//    }
+//}

@@ -3,11 +3,9 @@ package com.example.demo.decorator;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface ProxyKey {
-   String host();
-   int port();
+@java.lang.annotation.Target({ElementType.TYPE})
+public @interface Target {
+    String value();
 }
