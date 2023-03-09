@@ -16,7 +16,9 @@ public class HttpClient extends TarsusHttpProxy {
     @Proxy("DemoJavaProject")
     public String TarsusHttpServer(LinkedHashMap<Object, Object> params){
         //  请求RPC微服务的
-        ResponseEntity<String> response = proxyRequest(params,"TarsusHttpServer");
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        ResponseEntity<String> response = proxyRequest(params,methodName);
         return response.getBody();
     }
+
 }

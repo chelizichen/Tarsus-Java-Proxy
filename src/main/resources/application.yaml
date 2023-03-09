@@ -1,3 +1,7 @@
+tarsus:
+    name: "@TarsusDemoProject/JavaProxyDemo -l java -t @tarsus/http -h 127.0.0.1 -p 7098"
+    init_url: "http://127.0.0.1:9811/gateway/regist"
+
 server:
     port: 8080
     tomcat:
