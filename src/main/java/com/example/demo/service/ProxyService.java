@@ -1,5 +1,6 @@
 package com.example.demo.service;
 import com.darylteo.rx.promises.java.Promise;
+import com.example.demo.base.TarsusRequest;
 import com.example.demo.proxy.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,15 +50,13 @@ public class ProxyService {
     }
 
     public String AsyncEvent2(){
-        LinkedHashMap<Object, Object> body = new LinkedHashMap<>();
-        body.put("interFace","DemoInterFace");
-        body.put("method","hello");
-        body.put("type","java");
-        LinkedHashMap data = new LinkedHashMap();
-        data.put("name","测试名称");
-        data.put("age","21");
-        body.put("data", data);
-        String client = httpClient.TarsusHttpServer(body);
+
+        LinkedHashMap<Object, Object> payload = TarsusRequest.create("DemoInterFace", "hello")
+                .assemble("name", "测试名称")
+                .assemble("age", "21")
+                .payload();
+
+        String client = httpClient.TarsusHttpServer(payload);
         return client;
     }
 

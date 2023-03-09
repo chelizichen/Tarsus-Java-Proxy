@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedHashMap;
 
 @Service
-@Target("http://127.0.0.1:6011/gateway/tarsusRpc") // 微服务网关层
+@Target("http://127.0.0.1:6011/gateway/tarsusHttp") // 微服务网关层
 public class HttpClient extends TarsusHttpProxy {
 
     // Proxy 代表Http微服务项目

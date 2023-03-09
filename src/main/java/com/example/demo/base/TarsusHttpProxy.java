@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class TarsusHttpProxy {
 
-    public  Map<String,String> KeysMap = new HashMap<String,String>();
+    public Map<String, String> KeysMap = new HashMap<String, String>();
     public String target;
 
     public TarsusHttpProxy() {
@@ -26,22 +26,22 @@ public class TarsusHttpProxy {
         for (Method declaredMethod : declaredMethods) {
             boolean annotationPresent = declaredMethod.isAnnotationPresent(Proxy.class);
             // 反射拿到对应注解的值
-            if(annotationPresent){
+            if (annotationPresent) {
                 Proxy annotation = declaredMethod.getAnnotation(Proxy.class);
                 String name = declaredMethod.getName();
-                KeysMap.put(name,annotation.value());
+                KeysMap.put(name, annotation.value());
             }
         }
     }
 
-    public ResponseEntity proxyRequest(LinkedHashMap params, String methodName){
+    public ResponseEntity proxyRequest(LinkedHashMap params, String methodName) {
         RestTemplate client = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         // 根据方法名称得到
         String value = this.KeysMap.get(methodName);
-        params.put("proxy",value);
+        params.put("proxy", value);
 
         HttpEntity<LinkedHashMap<Object, Object>> requestEntity = new HttpEntity<LinkedHashMap<Object, Object>>(params, headers);
         ResponseEntity<String> response = client.exchange(this.target, HttpMethod.POST, requestEntity, String.class);

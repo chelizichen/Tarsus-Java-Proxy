@@ -10,12 +10,12 @@ import org.springframework.web.client.RestTemplate;
 public class TarsusHttpTemplate {
 
     @Bean
-    public RestTemplate restTemplate(ClientHttpRequestFactory factory){
+    public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
         return new RestTemplate(factory);
     }
 
     @Bean
-    public ClientHttpRequestFactory simpleClientHttpRequestFactory(){
+    public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(15000);
         factory.setReadTimeout(5000);
