@@ -1,9 +1,12 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.TestData;
 import com.example.demo.service.ProxyService;
 import com.example.demo.utils.ret;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RequestMapping("proxy")
 @RestController
@@ -19,16 +22,12 @@ public class ProxyController {
         return ret.success(s);
     }
 
-    @RequestMapping("parmas_test")
+    @PostMapping("linked_test")
     @ResponseBody
-    public ret params_test(@RequestParam("key") String key, @RequestParam("value") String value) {
-        String data = key + value;
-        return ret.success(data);
-    }
-
-    @PostMapping("post_params_test")
-    public ret post_params_test(@RequestParam("key") String key, @RequestParam("value") String value) {
-        String data = key + value;
-        return ret.success(data);
+    public ret LinkedReuqest(@RequestBody TestData testData){
+        System.out.println("testData"+testData.name);
+        System.out.println("testData"+testData.age);
+        Map s = proxyService.AsyncEvent2(testData);
+        return ret.success(s);
     }
 }

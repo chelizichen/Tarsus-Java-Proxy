@@ -1,5 +1,6 @@
 package com.example.demo.proxy;
 
+import com.alibaba.fastjson2.JSON;
 import com.example.demo.base.TarsusHttpProxy;
 import com.example.demo.decorator.Proxy;
 import com.example.demo.decorator.Target;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Proxy注解代表着服务群中的具体微服务
@@ -17,14 +19,17 @@ import java.util.LinkedHashMap;
  */
 
 @Service
-@Target("http://127.0.0.1:6011/gateway/tarususRpc")
+@Target("http://127.0.0.1:9811/gateway/tarsusRpc")
 public class RpcClient extends TarsusHttpProxy {
 
     // Proxy 代表Http微服务项目
-    @Proxy("JavaDemo")
-    public String TarsusRpcServer(LinkedHashMap<Object, Object> params){
+    @Proxy("NodeDemo")
+    public Map TarsusRpcRequest(LinkedHashMap<String, Object> params){
         //  请求RPC微服务的
-        ResponseEntity<String> response = proxyRequest(params,"TarsusRpcServer");
-        return response.getBody();
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        ResponseEntity<String> response = proxyRequest(params,methodName);
+        final String body = response.getBody();
+        final Map parse = (Map) JSON.parse(body);
+        return parse;
     }
 }
