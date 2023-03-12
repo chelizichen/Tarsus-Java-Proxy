@@ -1,6 +1,6 @@
 package com.example.demo.base;
 
-import com.example.demo.decorator.Proxy;
+import com.example.demo.decorator.Project;
 import com.example.demo.decorator.Target;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -24,10 +24,10 @@ public class TarsusHttpProxy {
 
         // 遍历子类
         for (Method declaredMethod : declaredMethods) {
-            boolean annotationPresent = declaredMethod.isAnnotationPresent(Proxy.class);
+            boolean annotationPresent = declaredMethod.isAnnotationPresent(Project.class);
             // 反射拿到对应注解的值
             if (annotationPresent) {
-                Proxy annotation = declaredMethod.getAnnotation(Proxy.class);
+                Project annotation = declaredMethod.getAnnotation(Project.class);
                 String name = declaredMethod.getName();
                 KeysMap.put(name, annotation.value());
             }

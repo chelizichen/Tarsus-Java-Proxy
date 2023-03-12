@@ -2,7 +2,7 @@ package com.example.demo.proxy;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.demo.base.TarsusHttpProxy;
-import com.example.demo.decorator.Proxy;
+import com.example.demo.decorator.Project;
 import com.example.demo.decorator.Target;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class RpcClient extends TarsusHttpProxy {
 
     // Proxy 代表Http微服务项目
-    @Proxy("NodeDemo")
+    @Project("NodeDemo")
     public Map TarsusRpcRequest(LinkedHashMap<String, Object> params){
         //  请求RPC微服务的
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
@@ -32,4 +32,15 @@ public class RpcClient extends TarsusHttpProxy {
         final Map parse = (Map) JSON.parse(body);
         return parse;
     }
+
+    @Project("JavaDemo")
+    public Map TarsusJavaRpcRequest(LinkedHashMap<String, Object> params){
+        //  请求RPC微服务的
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        ResponseEntity<String> response = proxyRequest(params,methodName);
+        final String body = response.getBody();
+        final Map parse = (Map) JSON.parse(body);
+        return parse;
+    }
+
 }

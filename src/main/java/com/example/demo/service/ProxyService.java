@@ -62,4 +62,14 @@ public class ProxyService {
         return client;
     }
 
+    public Map AsyncEvent3(TestData testData){
+
+        LinkedHashMap<String, Object> payload = TarsusRequest.create("HelloInterFace", "say")
+                .assemble("name", testData.name)
+                .assemble("age", testData.age)
+                .payload();
+        Map client = rpcClient.TarsusJavaRpcRequest(payload);
+        return client;
+    }
+
 }

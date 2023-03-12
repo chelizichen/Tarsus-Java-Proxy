@@ -22,12 +22,21 @@ public class ProxyController {
         return ret.success(s);
     }
 
-    @PostMapping("linked_test")
+    @PostMapping("node_test")
     @ResponseBody
-    public ret LinkedReuqest(@RequestBody TestData testData){
+    public Map LinkedRequest(@RequestBody TestData testData){
         System.out.println("testData"+testData.name);
         System.out.println("testData"+testData.age);
         Map s = proxyService.AsyncEvent2(testData);
-        return ret.success(s);
+        return s;
+    }
+
+    @PostMapping("java_test")
+    @ResponseBody
+    public Map javaTest(@RequestBody TestData testData){
+        System.out.println("testData"+testData.name);
+        System.out.println("testData"+testData.age);
+        Map s = proxyService.AsyncEvent3(testData);
+        return s;
     }
 }
